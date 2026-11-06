@@ -1,0 +1,39 @@
+{
+  "repo_name": "linkfreeze",
+  "date": "2026-11-06",
+  "category": "email-security",
+  "one_line_summary": "A local link-preview proxy that renders a safe, time-bounded snapshot of a URL so emails can show previews without sending a live browser to the original site on every click.",
+  "problem": "Link previews in email and chat can expose your IP, cookies, and referral context to the linked site the moment a preview is generated, and previews can embed anything the remote server returns.",
+  "audience": "Non-developer: people who want to see where a link goes before they click, or who share links and want previews without leaking a live request to the destination on every preview.",
+  "solution": "A local proxy that fetches the target URL in an isolated renderer, takes a snapshot, and serves a time-bounded preview card. It applies a simple policy: no cookies forwarded, no credentials, no scripting of the local context, and a clear indication that the preview is a snapshot, not a live visit.",
+  "key_features": [
+    "Local preview endpoint that fetches a URL and returns a safe snapshot card",
+    "No credential or cookie forwarding to the target",
+    "Time-bounded preview with expiry so the snapshot is not treated as fresh forever",
+    "Policy report per preview: what was fetched, when, and what was redacted",
+    "Configurable allow/deny list for preview targets"
+  ],
+  "tech_stack": ["python-stdlib", "pytest"],
+  "mvp_scope": "HTTP server with a /preview endpoint, a fetch-and-snapshot routine that strips credentials, a simple policy engine for allow/deny, expiry metadata, and a JSON policy report alongside the snapshot.",
+  "non_dev_usable": true,
+  "tests_plan": [
+    "Unit tests for policy allow/deny and expiry handling",
+    "Unit tests for credential stripping in the request builder",
+    "Integration test against a local static test server that confirms no cookies/credentials are sent and the preview card carries expiry + policy metadata"
+  ],
+  "files": {
+    "app.py": "Small HTTP preview server with /preview and /health",
+    "policy.py": "Allow/deny + expiry logic, pure functions",
+    "fetch.py": "Credential-stripped fetch and snapshot construction",
+    "server_config.py": "Server bootstrap and basic settings",
+    "tests/test_policy.py": "Policy unit tests",
+    "tests/test_fetch.py": "Fetch/credential stripping tests",
+    "tests/test_preview_integration.py": "Local integration against a test static server",
+    "tests/run_tests.sh": "Run pytest",
+    "README.md": "What it does, how to run locally, safety model, limitations",
+    "RESULTS.md": "Actual observed results and test output",
+    "SECURITY.md": "Security-relevant design notes for a link-preview proxy: isolation model, what it does not protect against, and how to run it safely",
+    ".gitignore": "__pycache__, .pytest_cache, logs",
+    "LICENSE": "MIT"
+  }
+}
